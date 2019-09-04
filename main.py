@@ -1,11 +1,13 @@
 import pygame
 import random
+import sys
 
 # Some parameters for the game and init of pygame window
 PURPLE = (255, 0, 255)
 BLACK = (0, 0, 0)
 screen = pygame.display.set_mode([500, 500])
 pygame.init()
+font_name = pygame.font.match_font('arial')
 
 
 # Segment is a block of the Snake
@@ -33,8 +35,8 @@ class Snake():
         self.colour = colour
         self.length = length
         self.segments = []
-        self.x, self.y = 30, 30
-        self.xVel, self.yVel = 0, 0
+        self.x, self.y = 250, 250
+        self.xVel, self.yVel = -10, 0
         self.direction = ''
         for i in range(length):
             self.segments.append(Segment(self.x, self.y, colour))
@@ -47,23 +49,47 @@ class Snake():
     def SnakeMove(self):
         self.x += self.xVel
         self.y += self.yVel
-        print(self.y, self.x)
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
         self.segments.pop()
+
+
+# Utility fucntion to display text on the screen
+def draw_text(surf, text, size, x, y):
+    font = pygame.font.Font(font_name, size)
+    text_surface = font.render(text, True, PURPLE)
+    text_rect = text_surface.get_rect()
+    text_rect.midtop = (x, y)
+    surf.blit(text_surface, text_rect)
 
 
 # Util function to redraw the window
 def update_window(screen):
     global snake
     screen.fill(BLACK)
+    draw_text(screen, str(snake.length), 30, 250, 10)
     snake.SnakeDraw()
     pygame.display.update()
+
+# the start screen
+# if key pressed, start screen loop terminates and game loop begins
+
+
+def start_screen(screen):
+    terminate = False
+    while not terminate:
+        draw_text(screen, 'Press any key to play!', 40, 200, 200)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                terminate = True
+                break
+        pygame.display.flip()
+
 
 # Game loop
 clock = pygame.time.Clock()
 snake = Snake(PURPLE)
+start_screen(screen)
 while True:
-
     # Get key press
     # Give ability to quit using the x in the window corner
     # Key directions determine velocity of the snake and current direction
@@ -91,8 +117,6 @@ while True:
                 snake.xVel += 10
                 snake.yVel = 0
 
-    screen.fill(BLACK)
-    snake.SnakeDraw()
     snake.SnakeMove()
     update_window(screen)
     clock.tick(10)
