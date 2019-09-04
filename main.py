@@ -12,7 +12,7 @@ font_name = pygame.font.match_font('arial')
 
 # Segment is a block of the Snake
 # The snake is constructed of these segments
-class Segment():
+class Segment:
     def __init__(self, x, y, colour, width=10):
         self.x, self.y = x, y
         self.colour = colour
@@ -30,7 +30,7 @@ class Segment():
 # self.segments is used to store the segments of the snake
 # xVel and yVel are velocities used to determine snake movement
 # direction is a label of the current direction of the snake
-class Snake():
+class Snake:
     def __init__(self, colour, length=5):
         self.colour = colour
         self.length = length
@@ -53,7 +53,7 @@ class Snake():
         self.segments.pop()
 
 
-# Utility fucntion to display text on the screen
+# Utility function to display text on the screen
 def draw_text(surf, text, size, x, y):
     font = pygame.font.Font(font_name, size)
     text_surface = font.render(text, True, PURPLE)
