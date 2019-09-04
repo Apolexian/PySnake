@@ -95,24 +95,29 @@ while True:
     # Key directions determine velocity of the snake and current direction
     # Snake can not go in same direction as its currently going
     # To avoid stacking of velocities and infinite acceleration
+    # Snake can not move in opposite direction to current
     for event in pygame.event.get():
         keys = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
             pygame.quit()
         if event.type == pygame.KEYDOWN:
-            if keys[pygame.K_UP] and not snake.direction == 'UP':
+            if keys[pygame.K_UP] and not (snake.direction == 'UP' or
+                                          snake.direction == 'DOWN'):
                 snake.direction = 'UP'
                 snake.yVel -= 10
                 snake.xVel = 0
-            elif keys[pygame.K_DOWN] and not snake.direction == 'DOWN':
+            elif keys[pygame.K_DOWN] and not (snake.direction == 'DOWN' or
+                                              snake.direction == 'UP'):
                 snake.direction = 'DOWN'
                 snake.yVel += 10
                 snake.xVel = 0
-            elif keys[pygame.K_LEFT] and not snake.direction == 'LEFT':
+            elif keys[pygame.K_LEFT] and not (snake.direction == 'LEFT' or
+                                              snake.direction == 'RIGHT'):
                 snake.direction = 'LEFT'
                 snake.xVel -= 10
                 snake.yVel = 0
-            elif keys[pygame.K_RIGHT] and not snake.direction == 'RIGHT':
+            elif keys[pygame.K_RIGHT] and not (snake.direction == 'RIGHT' or
+                                               snake.direction == 'LEFT'):
                 snake.direction = 'RIGHT'
                 snake.xVel += 10
                 snake.yVel = 0
