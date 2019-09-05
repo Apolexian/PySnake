@@ -77,12 +77,15 @@ def update_window(screen):
 def start_screen(screen):
     terminate = False
     while not terminate:
-        draw_text(screen, 'Press any key to play!', 40, 200, 200)
+        draw_text(screen, 'Press any key to play!', 40, 250, 150)
         for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
                 terminate = True
                 break
-        pygame.display.flip()
+            pygame.display.flip()
 
 
 # Game loop
@@ -100,6 +103,7 @@ while True:
         keys = pygame.key.get_pressed()
         if event.type == pygame.QUIT:
             pygame.quit()
+            sys.exit()
         if event.type == pygame.KEYDOWN:
             if keys[pygame.K_UP] and not (snake.direction == 'UP' or
                                           snake.direction == 'DOWN'):
