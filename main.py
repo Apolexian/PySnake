@@ -1,14 +1,9 @@
 import pygame
 import random
 import sys
+from params import *
 
-# Some parameters for the game and init of pygame window
-PURPLE = (255, 0, 255)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-size = 500
+# set screen size and init pygame
 screen = pygame.display.set_mode([size, size])
 pygame.init()
 font_name = pygame.font.match_font('arial')
@@ -51,12 +46,12 @@ class Food:
 # xVel and yVel are velocities used to determine snake movement
 # direction is a label of the current direction of the snake
 class Snake:
-    def __init__(self, colour, length=5):
+    def __init__(self, colour, length=5,size=500):
         self.colour = colour
         self.initial_length = length
         self.length = length
         self.segments = []
-        self.x, self.y = 250, 250
+        self.x, self.y = size//2, size//2
         self.xVel, self.yVel = -10, 0
         self.direction = 'LEFT'
         for i in range(length):
