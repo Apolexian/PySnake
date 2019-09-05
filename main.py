@@ -87,7 +87,13 @@ class Snake:
         self.segments.pop()
 
     def snake_grow(self):
-        pass #TODO write a function that extends the snake after eating
+        self.x += self.xVel
+        self.y += self.yVel
+        self.segments.insert(0, Segment(self.x, self.y, self.colour))
+
+
+def check_collisions(snake, border, food):
+    pass #TODO write it
 
 
 # Utility function to display text on the screen
@@ -103,15 +109,15 @@ def draw_text(surf, text, size, x, y):
 def update_window(screen):
     global snake
     screen.fill(BLACK)
-# Displaying the score which is equal to the difference in snake's current and initial sizes
+# The score = delta length
     draw_text(screen, str(snake.length-snake.initial_length), 30, 250, 10)
     snake.snake_draw()
 # TODO draw borders and food
     pygame.display.update()
 
 
-# the start screen
-# if key pressed, start screen loop terminates and game loop begins
+# The start screen
+# If key pressed, start screen loop terminates and game loop begins
 def start_screen(screen):
     terminate = False
     while not terminate:
