@@ -42,21 +42,6 @@ class Food:
                                                self.width, self.width), 0)
 
 
-# Border is surrounding the playable area
-# Snake running into the boarder will result in a lost game
-class Border:
-    def __init__(self, size, colour=WHITE, width=10):
-        self.size = size
-        self.colour = colour
-        self.width = width
-        self.coordinates = [(x, y) for x in range(size) for y in range(size)]
-
-# TODO get the list of coorrdinates right
-# Draw the border of specified width around the area specified by the size
-    def border_draw(self):
-        pass #TODO draw the actual border
-
-
 # Snake class
 # Length controls starting number of segments
 # self.segments is used to store the segments of the snake
@@ -135,6 +120,7 @@ def start_screen(screen):
 # The game over screen that is displayed when game is lost
 def game_over_screen(screen):
     draw_text(screen, "Game over lul", 40, 250, 150)
+# TODO do stuff here
 
 
 # Game loop
