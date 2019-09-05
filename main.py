@@ -4,6 +4,8 @@ import sys
 
 # Some parameters for the game and init of pygame window
 PURPLE = (255, 0, 255)
+RED = (255, 0, 0)
+WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 screen = pygame.display.set_mode([500, 500])
 pygame.init()
@@ -25,6 +27,36 @@ class Segment:
                                                self.width), 0)
 
 
+# Food is the objective that snake is meant to reach
+# Food will cause the snake to grow and score to increase
+class Food:
+    def __init__(self, x, y, colour=RED, width=10):
+        self.x, self.y = x, y
+        self.colour = colour
+        self.width = width
+
+# Place the food at the specified coordinates
+# Food is a square of width*width dimension
+    def food_draw(self):
+        pygame.draw.rect(screen, self.colour, (self.x, self.y,
+                                               self.width, self.width), 0)
+
+
+# Border is surrounding the playable area
+# Snake running into the boarder will result in a lost game
+class Border:
+    def __init__(self, size, colour=WHITE, width=10):
+        self.size = size
+        self.colour = colour
+        self.width = width
+        self.coordinates = [(x, y) for x in range(size) for y in range(size)]
+
+# TODO get the list of coorrdinates right
+# Draw the border of specified width around the area specified by the size
+    def border_draw(self):
+        pass #TODO draw the actual border
+
+
 # Snake class
 # Length controls starting number of segments
 # self.segments is used to store the segments of the snake
@@ -33,15 +65,17 @@ class Segment:
 class Snake:
     def __init__(self, colour, length=5):
         self.colour = colour
+        self.initial_length = length
         self.length = length
         self.segments = []
         self.x, self.y = 250, 250
         self.xVel, self.yVel = -10, 0
-        self.direction = ''
+        self.direction = 'LEFT'
         for i in range(length):
             self.segments.append(Segment(self.x, self.y, colour))
             self.x += self.segments[i].width
 
+# Function to create the snake
     def snake_draw(self):
         for i in range(len(self.segments)):
             self.segments[i].segment_draw()
@@ -51,6 +85,9 @@ class Snake:
         self.y += self.yVel
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
         self.segments.pop()
+
+    def snake_grow(self):
+        pass #TODO write a function that extends the snake after eating
 
 
 # Utility function to display text on the screen
@@ -62,18 +99,19 @@ def draw_text(surf, text, size, x, y):
     surf.blit(text_surface, text_rect)
 
 
-# Util function to redraw the window
+# Utility function to redraw the window
 def update_window(screen):
     global snake
     screen.fill(BLACK)
-    draw_text(screen, str(snake.length), 30, 250, 10)
+# Displaying the score which is equal to the difference in snake's current and initial sizes
+    draw_text(screen, str(snake.length-snake.initial_length), 30, 250, 10)
     snake.snake_draw()
+# TODO draw borders and food
     pygame.display.update()
+
 
 # the start screen
 # if key pressed, start screen loop terminates and game loop begins
-
-
 def start_screen(screen):
     terminate = False
     while not terminate:
@@ -88,8 +126,15 @@ def start_screen(screen):
             pygame.display.flip()
 
 
+# The game over screen that is displayed when game is lost
+def game_over_screen(screen):
+    draw_text(screen, "Game over lul", 40, 250, 150)
+
+
 # Game loop
 clock = pygame.time.Clock()
+border = Border(500)
+food = Food(0, 0)
 snake = Snake(PURPLE)
 start_screen(screen)
 while True:
@@ -127,5 +172,6 @@ while True:
                 snake.yVel = 0
 
     snake.snake_move()
+# TODO check for collisions
     update_window(screen)
     clock.tick(10)
