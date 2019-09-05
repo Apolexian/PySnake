@@ -20,7 +20,7 @@ class Segment:
 
 # Draw the segment at the specified coordinates
 # Segments are squares with dimensions of width*width
-    def SegmentDraw(self):
+    def segment_draw(self):
         pygame.draw.rect(screen, self.colour, (self.x, self.y, self.width,
                                                self.width), 0)
 
@@ -42,11 +42,11 @@ class Snake:
             self.segments.append(Segment(self.x, self.y, colour))
             self.x += self.segments[i].width
 
-    def SnakeDraw(self):
+    def snake_draw(self):
         for i in range(len(self.segments)):
-            self.segments[i].SegmentDraw()
+            self.segments[i].segment_draw()
 
-    def SnakeMove(self):
+    def snake_move(self):
         self.x += self.xVel
         self.y += self.yVel
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
@@ -67,7 +67,7 @@ def update_window(screen):
     global snake
     screen.fill(BLACK)
     draw_text(screen, str(snake.length), 30, 250, 10)
-    snake.SnakeDraw()
+    snake.snake_draw()
     pygame.display.update()
 
 # the start screen
@@ -126,6 +126,6 @@ while True:
                 snake.xVel += 10
                 snake.yVel = 0
 
-    snake.SnakeMove()
+    snake.snake_move()
     update_window(screen)
     clock.tick(10)
