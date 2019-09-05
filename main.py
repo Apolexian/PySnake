@@ -8,7 +8,8 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-screen = pygame.display.set_mode([500, 500])
+size = 500
+screen = pygame.display.set_mode([size, size])
 pygame.init()
 font_name = pygame.font.match_font('arial')
 
@@ -82,7 +83,6 @@ class Snake:
 
 def check_collisions(snake, food, size = 500):
     # Coordinates of snake's body segments
-    body = [(snake.segments[i].x, snake.segments[i].y) for i in range(1,len(snake.segments))]
     if snake.x == food.x and snake.y == food.y:
         snake.snake_grow()
         food.x -= 60
@@ -90,8 +90,12 @@ def check_collisions(snake, food, size = 500):
         # TODO actually generate new coordinates for food
     elif snake.x > size or snake.x < 0 or snake.y > size or snake.y < 0:
         snake.colour = BLUE # TODO do gameover instead of a dead snake
-    elif (snake.x, snake.y) in body:
-        snake.colour = BLUE # TODO do gameover instead of a dead snake
+    else:
+        for s in snake.segments[1:]:
+            if s.x == snake.x and s.y == snake.y:
+                snake.colour = BLUE  # TODO game over instead of a dead snake
+                # TODO break from the forloop here?
+
 
 
 
@@ -132,8 +136,8 @@ def start_screen(screen):
 
 
 # The game over screen that is displayed when game is lost
-# TODO do stuff here
 def game_over_screen(screen):
+    # TODO do stuff here
     draw_text(screen, "Game over lul", 40, 250, 150)
 
 
