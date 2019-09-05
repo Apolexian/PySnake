@@ -5,6 +5,7 @@ import sys
 # Some parameters for the game and init of pygame window
 PURPLE = (255, 0, 255)
 RED = (255, 0, 0)
+BLUE = (0, 0, 255)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 screen = pygame.display.set_mode([500, 500])
@@ -34,6 +35,7 @@ class Food:
         self.x, self.y = x, y
         self.colour = colour
         self.width = width
+# todo it's kinda same as segment but idk, can it be a not class separate?
 
 # Place the food at the specified coordinates
 # Food is a square of width*width dimension
@@ -64,6 +66,7 @@ class Snake:
     def snake_draw(self):
         for i in range(len(self.segments)):
             self.segments[i].segment_draw()
+            self.length = len(self.segments)
 
     def snake_move(self):
         self.x += self.xVel
@@ -77,8 +80,19 @@ class Snake:
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
 
 
-def check_collisions(snake, border, food):
-    pass #TODO write it
+def check_collisions(snake, food, size = 500):
+    # Coordinates of snake's body segments
+    body = [(snake.segments[i].x, snake.segments[i].y) for i in range(1,len(snake.segments))]
+    if snake.x == food.x and snake.y == food.y:
+        snake.snake_grow()
+        food.x -= 60
+        food.y += 20
+        # TODO actually generate new coordinates for food
+    elif snake.x > size or snake.x < 0 or snake.y > size or snake.y < 0:
+        snake.colour = BLUE # TODO do gameover instead of a dead snake
+    elif (snake.x, snake.y) in body:
+        snake.colour = BLUE # TODO do gameover instead of a dead snake
+
 
 
 # Utility function to display text on the screen
@@ -95,9 +109,9 @@ def update_window(screen):
     global snake
     screen.fill(BLACK)
 # The score = delta length
-    draw_text(screen, str(snake.length-snake.initial_length), 30, 250, 10)
+    food.food_draw()
     snake.snake_draw()
-# TODO draw borders and food
+    draw_text(screen, str(snake.length-snake.initial_length), 30, 250, 10)
     pygame.display.update()
 
 
@@ -118,15 +132,15 @@ def start_screen(screen):
 
 
 # The game over screen that is displayed when game is lost
+# TODO do stuff here
 def game_over_screen(screen):
     draw_text(screen, "Game over lul", 40, 250, 150)
-# TODO do stuff here
 
 
 # Game loop
 clock = pygame.time.Clock()
-border = Border(500)
-food = Food(0, 0)
+food = Food(100, 250)
+# todo maybe just food = Segment(x, y, RED)
 snake = Snake(PURPLE)
 start_screen(screen)
 while True:
@@ -164,6 +178,6 @@ while True:
                 snake.yVel = 0
 
     snake.snake_move()
-# TODO check for collisions
+    check_collisions(snake, food)
     update_window(screen)
     clock.tick(10)
