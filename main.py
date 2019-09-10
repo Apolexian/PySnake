@@ -1,9 +1,13 @@
 import pygame
 import random
 import sys
-from params import *
 
-# set screen size and init pygame
+PURPLE = (255, 0, 255)
+RED = (255, 0, 0)
+BLACK = (0, 0, 0)
+size = 500
+
+# Set screen size and init pygame
 screen = pygame.display.set_mode([size, size])
 pygame.init()
 font_name = pygame.font.match_font('arial')
@@ -32,16 +36,17 @@ class Food:
         self.colour = colour
         self.width = width
 
-# Place the food at the specified coordinates
+# Draw the food at the specified coordinates
 # Food is a square of width*width dimension
     def food_draw(self):
         pygame.draw.rect(screen, self.colour, (self.x, self.y,
                                                self.width, self.width), 0)
 
-# Generate a new coordinates for the food after it's been eaten
+# Update coordinates after the food has been eaten
     def food_new(self):
         self.x = random.choice(range(10, size, self.width))
         self.y = random.choice(range(10, size, self.width))
+
 
 # Snake class
 # Length controls starting number of segments
@@ -49,7 +54,7 @@ class Food:
 # xVel and yVel are velocities used to determine snake movement
 # direction is a label of the current direction of the snake
 class Snake:
-    def __init__(self, colour, length=5,size=500):
+    def __init__(self, colour, length=5, size=500):
         self.colour = colour
         self.initial_length = length
         self.length = length
@@ -67,20 +72,26 @@ class Snake:
             self.segments[i].segment_draw()
             self.length = len(self.segments)
 
+# Function to move the snake
+# Tail is popped and new head is drawn
     def snake_move(self):
         self.x += self.xVel
         self.y += self.yVel
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
         self.segments.pop()
 
+# Function to add a new segment to the snake
+# Draws a head in the place of the eaten food
     def snake_grow(self):
         self.x += self.xVel
         self.y += self.yVel
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
 
 
+# Function to check for snake's collisions with other elements
 # Returns True if the game was lost
-def check_collisions(snake, food, screen, size=500):
+def check_collisions(snake, food, size=500):
+    # Check collision with food
     if snake.x == food.x and snake.y == food.y:
         snake.snake_grow()
         on_snake = True
@@ -91,8 +102,10 @@ def check_collisions(snake, food, screen, size=500):
             for s in snake.segments[1:]:
                 if s.x == food.x and s.y == food.y:
                     on_snake = True
+    # Check collision with borders
     elif snake.x > size or snake.x < 0 or snake.y > size or snake.y < 0:
         return True
+    # Check collision with self
     else:
         for s in snake.segments[1:]:
             if s.x == snake.x and s.y == snake.y:
@@ -111,9 +124,9 @@ def draw_text(surf, text, size, x, y):
 # Utility function to redraw the window
 def update_window(screen, snake, food):
     screen.fill(BLACK)
-# The score = delta length
     food.food_draw()
     snake.snake_draw()
+    # The score = delta length
     draw_text(screen, str(snake.length-snake.initial_length), 30, 250, 10)
     pygame.display.update()
 
@@ -134,11 +147,14 @@ def start_screen(screen):
             pygame.display.flip()
 
 
-# The game over screen that is displayed when game is lost
+# The game over screen
+# Displayed when game is lost
+# Allows user to play the game again
 def game_over_screen(screen, snake):
     screen.fill(BLACK)
     draw_text(screen, "Game over :(", 40, 250, 100)
-    draw_text(screen, "Total score of "+str(snake.length-snake.initial_length), 40, 250, 150)
+    draw_text(screen, "Total score of "+str(
+                    snake.length-snake.initial_length), 40, 250, 150)
     draw_text(screen, 'Press any key to play again!', 40, 250, 200)
     pygame.display.update()
     terminate = False
@@ -154,7 +170,8 @@ def game_over_screen(screen, snake):
     game_init()
 
 
-# Initialising game parameters
+# Utility function for initialising game objects
+# Starts the game loop
 def game_init():
     clock = pygame.time.Clock()
     food = Food()
@@ -210,7 +227,3 @@ def game_loop(clock, food, snake):
 
 start_screen(screen)
 game_init()
-
-
-
-
