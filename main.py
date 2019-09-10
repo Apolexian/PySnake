@@ -218,7 +218,7 @@ def game_loop(clock, food, snake):
                     snake.yVel = 0
 
         snake.snake_move()
-        if check_collisions(snake, food, screen, size):
+        if check_collisions(snake, food, size):
             game_over_screen(screen, snake)
         else:
             update_window(screen, snake, food)
