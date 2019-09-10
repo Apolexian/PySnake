@@ -27,7 +27,7 @@ class Segment:
 # Food is the objective that snake is meant to reach
 # Food will cause the snake to grow and score to increase
 class Food:
-    def __init__(self, x, y, colour=RED, width=10):
+    def __init__(self, x=0, y=0, colour=RED, width=10):
         self.x, self.y = x, y
         self.colour = colour
         self.width = width
@@ -40,8 +40,8 @@ class Food:
 
 # Generate a new coordinates for the food after it's been eaten
     def food_new(self):
-        self.x = random.choice(range(0, size, self.width))
-        self.y = random.choice(range(0, size, self.width))
+        self.x = random.choice(range(10, size, self.width))
+        self.y = random.choice(range(10, size, self.width))
 
 # Snake class
 # Length controls starting number of segments
@@ -92,13 +92,10 @@ def check_collisions(snake, food, screen, size=500):
                 if s.x == food.x and s.y == food.y:
                     on_snake = True
     elif snake.x > size or snake.x < 0 or snake.y > size or snake.y < 0:
-        snake.colour = BLUE # TODO do gameover instead of a dead snake
         return True
     else:
         for s in snake.segments[1:]:
             if s.x == snake.x and s.y == snake.y:
-                snake.colour = BLUE
-                game_over_screen(screen)
                 return True
 
 
@@ -112,8 +109,7 @@ def draw_text(surf, text, size, x, y):
 
 
 # Utility function to redraw the window
-def update_window(screen):
-    global snake
+def update_window(screen, snake, food):
     screen.fill(BLACK)
 # The score = delta length
     food.food_draw()
@@ -139,58 +135,82 @@ def start_screen(screen):
 
 
 # The game over screen that is displayed when game is lost
-def game_over_screen(screen):
-    # TODO do stuff here
-    print('here')
-    global snake
+def game_over_screen(screen, snake):
     screen.fill(BLACK)
-    draw_text(screen, "Game over lul", 40, 250, 100)
-    draw_text(screen, "Kek Total score of "+str(snake.length-snake.initial_length), 40, 250, 150)
+    draw_text(screen, "Game over :(", 40, 250, 100)
+    draw_text(screen, "Total score of "+str(snake.length-snake.initial_length), 40, 250, 150)
+    draw_text(screen, 'Press any key to play again!', 40, 250, 200)
     pygame.display.update()
+    terminate = False
+    while not terminate:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                terminate = True
+                break
+            pygame.display.flip()
+    game_init()
+
+
+# Initialising game parameters
+def game_init():
+    clock = pygame.time.Clock()
+    food = Food()
+    food.food_new()
+    food.food_draw()
+    snake = Snake(PURPLE)
+    game_loop(clock, food, snake)
 
 
 # Game loop
-clock = pygame.time.Clock()
-food = Food(100, 250)
-snake = Snake(PURPLE)
-start_screen(screen)
-while True:
-    # Get key press
-    # Give ability to quit using the x in the window corner
-    # Key directions determine velocity of the snake and current direction
-    # Snake can not go in same direction as its currently going
-    # To avoid stacking of velocities and infinite acceleration
-    # Snake can not move in opposite direction to current
-    for event in pygame.event.get():
-        keys = pygame.key.get_pressed()
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-        if event.type == pygame.KEYDOWN:
-            if keys[pygame.K_UP] and not (snake.direction == 'UP' or
-                                          snake.direction == 'DOWN'):
-                snake.direction = 'UP'
-                snake.yVel -= 10
-                snake.xVel = 0
-            elif keys[pygame.K_DOWN] and not (snake.direction == 'DOWN' or
-                                              snake.direction == 'UP'):
-                snake.direction = 'DOWN'
-                snake.yVel += 10
-                snake.xVel = 0
-            elif keys[pygame.K_LEFT] and not (snake.direction == 'LEFT' or
-                                              snake.direction == 'RIGHT'):
-                snake.direction = 'LEFT'
-                snake.xVel -= 10
-                snake.yVel = 0
-            elif keys[pygame.K_RIGHT] and not (snake.direction == 'RIGHT' or
-                                               snake.direction == 'LEFT'):
-                snake.direction = 'RIGHT'
-                snake.xVel += 10
-                snake.yVel = 0
+def game_loop(clock, food, snake):
+    while True:
+        # Get key press
+        # Give ability to quit using the x in the window corner
+        # Key directions determine velocity of the snake and current direction
+        # Snake can not go in same direction as its currently going
+        # To avoid stacking of velocities and infinite acceleration
+        # Snake can not move in opposite direction to current
+        for event in pygame.event.get():
+            keys = pygame.key.get_pressed()
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                if keys[pygame.K_UP] and not (snake.direction == 'UP' or
+                                              snake.direction == 'DOWN'):
+                    snake.direction = 'UP'
+                    snake.yVel -= 10
+                    snake.xVel = 0
+                elif keys[pygame.K_DOWN] and not (snake.direction == 'DOWN' or
+                                                  snake.direction == 'UP'):
+                    snake.direction = 'DOWN'
+                    snake.yVel += 10
+                    snake.xVel = 0
+                elif keys[pygame.K_LEFT] and not (snake.direction == 'LEFT' or
+                                                  snake.direction == 'RIGHT'):
+                    snake.direction = 'LEFT'
+                    snake.xVel -= 10
+                    snake.yVel = 0
+                elif keys[pygame.K_RIGHT] and not (snake.direction == 'RIGHT' or
+                                                   snake.direction == 'LEFT'):
+                    snake.direction = 'RIGHT'
+                    snake.xVel += 10
+                    snake.yVel = 0
 
-    snake.snake_move()
-    if check_collisions(snake, food, screen, size):
-        game_over_screen(screen)
-    else:
-        update_window(screen)
-    clock.tick(10)
+        snake.snake_move()
+        if check_collisions(snake, food, screen, size):
+            game_over_screen(screen, snake)
+        else:
+            update_window(screen, snake, food)
+        clock.tick(10)
+
+
+start_screen(screen)
+game_init()
+
+
+
+
