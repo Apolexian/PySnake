@@ -31,7 +31,6 @@ class Food:
         self.x, self.y = x, y
         self.colour = colour
         self.width = width
-# todo it's kinda same as segment but idk, can it be a not class separate?
 
 # Place the food at the specified coordinates
 # Food is a square of width*width dimension
@@ -39,6 +38,10 @@ class Food:
         pygame.draw.rect(screen, self.colour, (self.x, self.y,
                                                self.width, self.width), 0)
 
+# Generate a new coordinates for the food after it's been eaten
+    def food_new(self):
+        self.x = random.choice(range(0, size, self.width))
+        self.y = random.choice(range(0, size, self.width))
 
 # Snake class
 # Length controls starting number of segments
@@ -76,22 +79,27 @@ class Snake:
         self.segments.insert(0, Segment(self.x, self.y, self.colour))
 
 
-def check_collisions(snake, food, size = 500):
-    # Coordinates of snake's body segments
+# Returns True if the game was lost
+def check_collisions(snake, food, screen, size=500):
     if snake.x == food.x and snake.y == food.y:
         snake.snake_grow()
-        food.x -= 60
-        food.y += 20
-        # TODO actually generate new coordinates for food
+        on_snake = True
+        while on_snake:
+            food.food_new()
+            on_snake = False
+            # Check if the food is not on the snake
+            for s in snake.segments[1:]:
+                if s.x == food.x and s.y == food.y:
+                    on_snake = True
     elif snake.x > size or snake.x < 0 or snake.y > size or snake.y < 0:
         snake.colour = BLUE # TODO do gameover instead of a dead snake
+        return True
     else:
         for s in snake.segments[1:]:
             if s.x == snake.x and s.y == snake.y:
-                snake.colour = BLUE  # TODO game over instead of a dead snake
-                # TODO break from the forloop here?
-
-
+                snake.colour = BLUE
+                game_over_screen(screen)
+                return True
 
 
 # Utility function to display text on the screen
@@ -133,13 +141,17 @@ def start_screen(screen):
 # The game over screen that is displayed when game is lost
 def game_over_screen(screen):
     # TODO do stuff here
-    draw_text(screen, "Game over lul", 40, 250, 150)
+    print('here')
+    global snake
+    screen.fill(BLACK)
+    draw_text(screen, "Game over lul", 40, 250, 100)
+    draw_text(screen, "Kek Total score of "+str(snake.length-snake.initial_length), 40, 250, 150)
+    pygame.display.update()
 
 
 # Game loop
 clock = pygame.time.Clock()
 food = Food(100, 250)
-# todo maybe just food = Segment(x, y, RED)
 snake = Snake(PURPLE)
 start_screen(screen)
 while True:
@@ -177,6 +189,8 @@ while True:
                 snake.yVel = 0
 
     snake.snake_move()
-    check_collisions(snake, food)
-    update_window(screen)
+    if check_collisions(snake, food, screen, size):
+        game_over_screen(screen)
+    else:
+        update_window(screen)
     clock.tick(10)
